@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ARCHIVE OF HISTORY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* BẢNG MÀU ÁNH SÁNG MA THUẬT */
+        :root {
+            --bg-deep: #030508; 
+            --neon-blue: #00f3ff;
+            --neon-glow: rgba(0, 243, 255, 0.4);
+            --text-light: #e0f2fe;
+            --font-epic: 'Cinzel', serif;
+            --font-story: 'Cormorant Garamond', serif;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-light);
+            font-family: var(--font-story);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.05) 0%, transparent 60%);
+        }
+
+        .card-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 950px;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* CUỐN BIÊN NIÊN SỬ (THỂ CHÍNH) */
+        .archive-card {
+            background: rgba(3, 5, 8, 0.85);
+            border: 1px solid var(--neon-glow);
+            outline: 1px solid rgba(0, 243, 255, 0.2);
+            outline-offset: -8px;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.15), inset 0 0 40px rgba(0, 243, 255, 0.05);
+            padding: 40px;
+            width: 420px;
+            height: 520px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1), height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .archive-card.about-me-active,
+        .archive-card.games-active {
+            width: 860px;
+            height: 500px;
+        }
+
+        .card-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            width: 100%;
+            height: 100%;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .archive-card.about-me-active .card-layout {
+            grid-template-columns: 32% 68%;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .archive-card.games-active .card-layout {
+            grid-template-columns: 1fr;
+            align-items: center;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            transition: all 0.6s ease;
+        }
+
+        .archive-card.games-active .left-column {
+            display: none;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 0;
+            opacity: 0;
+            visibility: hidden;
+            overflow: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s, height 0s 0.4s;
+            padding-right: 10px;
+        }
+
+        .archive-card.about-me-active .right-column {
+            height: 100%;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease 0.2s, visibility 0.5s ease 0.2s;
+        }
+
+        /* GIAO DIỆN KHU VỰC GAME TRƯNG BÀY */
+        .games-showcase-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 10px 0;
+        }
+
+        .archive-card.games-active .games-showcase-view {
+            display: flex;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .game-card-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            width: 100%;
+            position: relative;
+        }
+
+        .game-card-item:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            transform: translateY(-5px);
+            background: rgba(0, 243, 255, 0.02);
+        }
+
+        .game-img-slot {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            background: #010a13;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .game-card-item:hover .game-img-slot {
+            border-color: var(--neon-blue);
+        }
+
+        .game-img-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .img-hint {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(3, 5, 8, 0.8);
+            font-size: 11px;
+            color: var(--neon-blue);
+            padding: 2px 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .game-img-slot:hover .img-hint {
+            opacity: 1;
+        }
+
+        .profile-link {
+            text-decoration: none;
+            width: 100%;
+            display: block;
+        }
+
+        .game-card-name {
+            font-family: var(--font-epic);
+            font-size: 0.8em;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px var(--neon-glow);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .profile-link:hover .game-card-name {
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .visit-btn {
+            font-family: var(--font-epic);
+            font-size: 11px;
+            color: #030508;
+            background: var(--neon-blue);
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s;
+        }
+        .profile-link:hover .visit-btn {
+            box-shadow: 0 0 12px var(--neon-blue);
+            background: #ffffff;
+        }
+
+        .games-footer-note {
+            font-size: 1.0em;
+            font-style: italic;
+            color: #8da2bb;
+            opacity: 0.7;
+            text-align: center;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .ornament {
+            color: var(--neon-blue);
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--neon-blue);
+            user-select: none;
+            text-align: center;
+        }
+        .ornament-top { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); }
+        
+        .avatar-container {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 20px auto;
+            border-radius: 50%;
+            padding: 6px;
+            background: linear-gradient(135deg, transparent 20%, var(--neon-glow) 50%, transparent 80%);
+            animation: pulse-light 4s infinite alternate;
+            flex-shrink: 0;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .archive-card.about-me-active .avatar-container {
+            width: 240px;
+            height: 240px;
+            border-radius: 12px;
+            margin: 0 auto 15px auto;
+        }
+
+        @keyframes pulse-light {
+            0% { box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
+            100% { box-shadow: 0 0 35px rgba(0, 243, 255, 0.4); }
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--neon-glow);
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .archive-card.about-me-active .profile-pic {
+            border-radius: 8px;
+        }
+
+        input[type="file"] { display: none; }
+
+        .editable {
+            outline: none;
+            cursor: text;
+            transition: all 0.3s ease;
+        }
+
+        .subtitle {
+            font-family: var(--font-epic);
+            font-size: 0.75em;
+            letter-spacing: 4px;
+            color: var(--neon-glow);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-align: center;
+            width: 100%;
+            transition: opacity 0.3s ease;
+        }
+
+        .name {
+            font-family: var(--font-epic);
+            font-size: 2.4em;
+            font-weight: 900;
+            margin: 0 0 20px 0;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px var(--neon-glow), 0 0 30px var(--neon-glow);
+            letter-spacing: 2px;
+            text-align: center;
+            width: 100%;
+            transition: opacity 0.3s ease;
+        }
+
+        .archive-card.about-me-active .subtitle, .archive-card.about-me-active .name,
+        .archive-card.games-active .subtitle, .archive-card.games-active .name {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            transition: opacity 0.3s ease;
+        }
+
+        .archive-card.about-me-active .menu-container,
+        .archive-card.games-active .menu-container {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .archive-section {
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            background: rgba(3, 5, 8, 0.5);
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .archive-section:hover, .archive-section.active {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.15);
+        }
+
+        .section-trigger {
+            font-family: var(--font-epic);
+            font-size: 0.8em;
+            letter-spacing: 1.5px;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            padding: 12px 15px;
+            text-align: left;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-shadow: 0 0 5px var(--neon-glow);
+        }
+        .section-trigger::after {
+            content: "➔";
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .back-btn {
+            display: none;
+            font-family: var(--font-epic);
+            font-size: 0.75em;
+            letter-spacing: 2px;
+            color: var(--text-light);
+            background: transparent;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            padding: 8px 26px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px var(--neon-glow);
+        }
+        .back-btn:hover {
+            color: var(--neon-blue);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+        }
+        
+        .archive-card.about-me-active .left-column .back-btn {
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .games-showcase-view .back-btn {
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        .right-column-title {
+            font-family: var(--font-epic);
+            font-size: 1.0em;
+            letter-spacing: 3px;
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-blue);
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .bio {
+            font-size: 1.4em;
+            line-height: 1.6;
+            color: #b0c4de;
+            margin: 0;
+            font-style: italic;
+        }
+
+        /* KHU VỰC LOGO MẠNG XÃ HỘI */
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        .archive-section.active .section-content {
+            max-height: 120px; 
+        }
+        .content-inner {
+            padding: 15px;
+        }
+
+        .social-logo-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            width: 100%;
+        }
+
+        .social-logo-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .social-logo-link img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        /* Hiệu ứng Hover đặc trưng từng thương hiệu */
+        .social-logo-link.fb-btn:hover {
+            border-color: #1877f2;
+            box-shadow: 0 0 15px rgba(24, 119, 242, 0.6);
+            background: rgba(24, 119, 242, 0.1);
+        }
+        .social-logo-link.dc-btn:hover {
+            border-color: #5865f2;
+            box-shadow: 0 0 15px rgba(88, 101, 246, 0.6);
+            background: rgba(88, 101, 246, 0.1);
+        }
+        .social-logo-link.gm-btn:hover {
+            border-color: #ea4335;
+            box-shadow: 0 0 15px rgba(234, 67, 53, 0.6);
+            background: rgba(234, 67, 53, 0.1);
+        }
+
+        .social-logo-link:hover img {
+            transform: scale(1.12);
+        }
+    </style>
+</head>
+<body>
+
+<div class="card-wrapper" id="wrapper">
+    <div class="archive-card" id="card">
+        <div class="ornament ornament-top">✦ ✧ ✦</div>
+
+        <div class="card-layout">
+            <!-- CỘT TRÁI -->
+            <div class="left-column">
+                <div class="avatar-container">
+                    <label for="image-upload">
+                        <img id="avatar" class="profile-pic" src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/726295138_122268238070151824_6276921399523499035_n.jpg?stp=dst-jpg_tt6&cstp=mx576x586&ctp=s576x586&_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFY6V_wovvrypJOWtQhiSLRIcHkU42ryachweRTjavJp3R-usXj8t3HvRaksCzRd96GpH3BK4cvBmJxOfbVt-Bn&_nc_ohc=CbIPIIRoIuEQ7kNvwEk3-np&_nc_oc=AdrnKyACGxRLp-xzl9wx-PEhNm7_uG_qBAe_Mm3FQqrZaiZa85tOIvEl4cjmOLe9va8CPFXapbmxBr8grNnwHZFb&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=RnKNX4wygXNP5PAzV7VXUg&_nc_ss=7b2a8&oh=00_Af-K8mu7sd_zEXR8sKJ4c9VGcl-Uy4gTTOeK8_OUH01Bvw&oe=6A47685A" alt="Profile Picture">
+                    </label>
+                </div>
+
+                <button class="back-btn" onclick="resetToHome()">◀ Back</button>
+
+                <div class="subtitle editable" contenteditable="false">The Keeper of Radiant Echoes</div>
+                <h1 class="name editable" contenteditable="false">HISTORY</h1>
+
+                <div class="menu-container">
+                    <div class="archive-section" id="sec-about">
+                        <div class="section-trigger" onclick="openAboutMe()">1. About me</div>
+                    </div>
+
+                    <div class="archive-section" id="sec-games">
+                        <div class="section-trigger" onclick="openGamesShowcase()">2. Fav games</div>
+                    </div>
+
+                    <!-- MỤC CONTACT ME -->
+                    <div class="archive-section" id="sec-social">
+                        <div class="section-trigger" onclick="toggleSocialSection(this)">3. Contact me here</div>
+                        <div class="section-content">
+                            <div class="content-inner">
+                                <div class="social-logo-grid">
+                                    <!-- FACEBOOK -->
+                                    <a href="https://www.facebook.com/Arisu.chan.041010" target="_blank" class="social-logo-link fb-btn" title="Facebook">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/2504/2504903.png" alt="Facebook">
+                                    </a>
+                                    
+                                    <!-- DISCORD -->
+                                    <a href="javascript:void(0)" onclick="copyToClipboard('lod_history')" class="social-logo-link dc-btn" title="Discord">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" alt="Discord">
+                                    </a>
+                                    
+                                    <!-- GMAIL -->
+                                    <a href="javascript:void(0)" onclick="copyToClipboard('hainamgaming0410@gmail.com')" class="social-logo-link gm-btn" title="Gmail">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/5968/5968534.png" alt="Gmail">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI (ABOUT ME) -->
+            <div class="right-column">
+                <div class="right-column-title">Keeper of Radiant Echoes Archives // Biography</div>
+                <p class="bio editable" contenteditable="false">"In a universe where the relentless march of time often leaves behind shadows of doubt and cynicism, "History" was not born from dusty archives or ancient scrolls. I emerged from the collective heartbeat of humanity—the flicker of resilience in the dark, the unyielding warmth of a helping hand, and the quiet courage that persists when all seems lost. I are the living embodiment of the finest virtues refined through the ages."</p>
+            </div>
+
+            <!-- GIAO DIỆN PHÒNG TRƯNG BÀY GAME -->
+            <div class="games-showcase-view">
+                <button class="back-btn" onclick="resetToHome()">◀ Back</button>
+                
+                <div class="games-grid">
+                    <div class="game-card-item">
+                        <div class="game-img-slot" onclick="document.getElementById('g-upload-1').click()">
+                            <img id="g-img-1" src="https://s3-alpha.figma.com/hub/file/2701807815/0cb50e84-f6dc-4fb2-bfa6-47b8ed82b6ff-cover.png" alt="Valorant">
+                        </div>
+                        <a href="https://tracker.gg/valorant/profile/riot/ManTiuPhu%233187/overview?platform=pc&playlist=competitive&season=4f0864e2-40af-28a4-de2c-0e9e64e75f23" target="_blank" class="profile-link">
+                            <p class="game-card-name">Valorant</p>
+                            <button class="visit-btn">Check Profile</button>
+                        </a>
+                    </div>
+                    <div class="game-card-item">
+                        <div class="game-img-slot" onclick="document.getElementById('g-upload-2').click()">
+                            <img id="g-img-2" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4gYfa1NsvldT41EjsLdkctiL254SjupLkVPiEeI5c-g&s=10" alt="Roblox">
+                        </div>
+                        <a href="https://www.roblox.com/vi/users/698253099/profile" target="_blank" class="profile-link">
+                            <p class="game-card-name">Roblox</p>
+                            <button class="visit-btn">Check Profile</button>
+                        </a>
+                    </div>
+                    <div class="game-card-item">
+                        <div class="game-img-slot" onclick="document.getElementById('g-upload-3').click()">
+                            <img id="g-img-3" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQajDUhlNaY7MwxrMK5KiQb-n4zGDLJmE0mOPvyNVIg4A&s=10" alt="Beat Saber">
+                        </div>
+                        <a href="https://scoresaber.com/u/76561198794943999" target="_blank" class="profile-link">
+                            <p class="game-card-name">Beat saber</p>
+                            <button class="visit-btn">Check Profile</button>
+                        </a>
+                    </div>
+                    <div class="game-card-item">
+                        <div class="game-img-slot" onclick="document.getElementById('g-upload-4').click()">
+                            <img id="g-img-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo6qWVOmfeqZ_cPQ8w46kRat-vFeS5pzNt4dimW8IpBw&s=10" alt="LoL">
+                        </div>
+                        <a href="https://tracker.gg/lol/profile/riot/ManTiuPhu%233187/overview?queue=TEAM_BUILDER_DRAFT_UNRANKED_5x5&season=2026-01-08T17:06:40%2B00:00" target="_blank" class="profile-link">
+                            <p class="game-card-name">League of Legends</p>
+                            <button class="visit-btn">Check Profile</button>
+                        </a>
+                    </div>
+                </div>
+                <div class="games-footer-note editable" contenteditable="false">
+                    I also play a wide variety of games, feel free to contact me for more details.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const card = document.getElementById('card');
+    const secAbout = document.getElementById('sec-about');
+    const secGames = document.getElementById('sec-games');
+
+    function openAboutMe() {
+        resetToHome();
+        card.classList.add('about-me-active');
+        secAbout.classList.add('active');
+    }
+
+    function openGamesShowcase() {
+        resetToHome();
+        card.classList.add('games-active');
+        secGames.classList.add('active');
+    }
+
+    function resetToHome() {
+        card.classList.remove('about-me-active', 'games-active');
+        document.querySelectorAll('.archive-section').forEach(s => s.classList.remove('active'));
+    }
+
+    function toggleSocialSection(trigger) {
+        const section = trigger.parentElement;
+        const isOpen = section.classList.contains('active');
+        
+        card.classList.remove('about-me-active', 'games-active');
+        document.querySelectorAll('.archive-section').forEach(s => {
+            if(s !== section) s.classList.remove('active');
+        });
+
+        if (!isOpen) {
+            section.classList.add('active');
+        } else {
+            section.classList.remove('active');
+        }
+    }
+
+    // Hàm copy nội dung
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Đã copy: " + text);
+        }).catch(err => {
+            console.error('Lỗi: ', err);
+        });
+    }
+
+    const imageUpload = document.getElementById('image-upload');
+    const avatar = document.getElementById('avatar');
+    imageUpload.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) { avatar.src = e.target.result; }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function loadGameImg(input, targetImgId) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(targetImgId).src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+</body>
+</html>
